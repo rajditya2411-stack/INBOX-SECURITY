@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, KeyRound, LockKeyhole, Plus, ShieldCheck, Trash2, Link as LinkIcon, Unlink, Server, AlertCircle } from 'lucide-react';
+import { Check, KeyRound, LockKeyhole, Plus, ShieldCheck, Trash2, Link as LinkIcon, Unlink, Server, AlertCircle, Moon, Sun } from 'lucide-react';
 import { useSecuritySettings, type AIProvider, type EmailProvider } from '@/hooks/use-security-settings';
 import { ImapConfigModal } from '@/components/imap-config-modal';
 
@@ -119,6 +119,43 @@ export function SettingsPage() {
           <button type="button" className="text-xs text-[#227255] underline" onClick={() => setConnectMessage('')}>Dismiss</button>
         </div>
       )}
+
+      <section className="panel overflow-hidden" data-testid="section-theme-settings">
+        <div className="border-b border-[#e8eef4] px-5 py-5 sm:px-7">
+          <div className="eyebrow">Appearance</div>
+          <h2 className="mt-1 text-xl font-bold text-[#1f4165]">Theme Mode</h2>
+          <p className="mt-1 text-sm leading-6 text-[#7b8fa4]">Switch between Dark Mode (Option 1 Minimalist) and Light Mode.</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-7">
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#234b73] text-[#60a5fa]">
+              {settings.theme === 'dark' ? <Moon size={20} /> : <Sun size={20} className="text-[#f59e0b]" />}
+            </span>
+            <div>
+              <div className="font-bold text-[#1f4165] text-sm">Active Theme: {settings.theme === 'dark' ? 'Dark Mode (Minimalist Option 1)' : 'Light Mode'}</div>
+              <div className="text-xs text-[#7b8fa4]">Personalize your visual experience. Saved in local settings.</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 rounded-xl border border-[#dbe7f2] bg-[#f5f9fe] p-1.5">
+            <button
+              type="button"
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all ${settings.theme === 'dark' ? 'bg-[#234b73] text-white shadow-sm' : 'text-[#5a6f88] hover:text-[#1f4165]'}`}
+              onClick={() => updateSettings({ theme: 'dark' })}
+              data-testid="button-theme-dark"
+            >
+              <Moon size={14} /> Dark
+            </button>
+            <button
+              type="button"
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all ${settings.theme === 'light' ? 'bg-[#234b73] text-white shadow-sm' : 'text-[#5a6f88] hover:text-[#1f4165]'}`}
+              onClick={() => updateSettings({ theme: 'light' })}
+              data-testid="button-theme-light"
+            >
+              <Sun size={14} /> Light
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section className="panel overflow-hidden">
         <div className="border-b border-[#e8eef4] px-5 py-5 sm:px-7">

@@ -1,6 +1,7 @@
-import { Archive, FileText, Inbox, LayoutDashboard, Menu, Settings, ShieldCheck, Send, SquarePen, Trash2, X } from 'lucide-react';
+import { Archive, FileText, Inbox, LayoutDashboard, Menu, Settings, ShieldCheck, Send, SquarePen, Trash2, X, Moon, Sun } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useEffect, useRef, useState } from 'react';
+import { useSecuritySettings } from '@/hooks/use-security-settings';
 
 type MailLayoutProps = { children: React.ReactNode; inboxCount: number; onCompose?: () => void };
 
@@ -15,6 +16,7 @@ const navItems = [
 ];
 
 export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps) {
+  const { settings, toggleTheme } = useSecuritySettings();
   const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -92,7 +94,7 @@ export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps)
         <div className="mt-auto rounded-xl border border-[#34506e] bg-[#203a59] p-4">
           <div className="mb-3 flex items-center gap-2 text-[#dcecff]">
             <ShieldCheck size={17} />
-             <span className="text-xs font-bold">Security Guard is active</span>
+             <span className="text-xs font-bold">Security Guard active</span>
           </div>
            <p className="text-[0.72rem] leading-5 text-[#a9c0d9]">Rule-based signals help you pause and verify unusual requests.</p>
         </div>
@@ -110,6 +112,19 @@ export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps)
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-xl border border-[#cbe0f2] dark:border-[#2a364a] bg-white dark:bg-[#161c27] px-3 py-1.5 text-xs font-bold text-[#234b73] dark:text-[#f0f4f8] shadow-sm transition-all hover:bg-[#f3f8fd] dark:hover:bg-[#1f2838]"
+              onClick={toggleTheme}
+              data-testid="button-toggle-theme-header"
+              title="Switch Light / Dark theme"
+            >
+              {settings.theme === 'dark' ? (
+                <><Sun size={15} className="text-[#f59e0b]" /> Light Mode</>
+              ) : (
+                <><Moon size={15} className="text-[#60a5fa]" /> Dark Mode</>
+              )}
+            </button>
             <div className="hidden items-center gap-2 text-xs text-[#6f8298] sm:flex" data-testid="status-local-only">
               <span className="h-2 w-2 rounded-full bg-[#5a9b89]" />
                Demo Mode

@@ -3,12 +3,14 @@ import { normalizeDomain } from '@/lib/analyzer';
 
 export type EmailProvider = 'demo' | 'gmail' | 'outlook' | 'imap';
 export type AIProvider = 'none' | 'openai' | 'anthropic' | 'gemini' | 'grok' | 'compatible';
+export type ThemeMode = 'dark' | 'light';
 
 export type SecuritySettings = {
   emailProvider: EmailProvider;
   aiProvider: AIProvider;
   aiModel: string;
   trustedDomains: string[];
+  theme: ThemeMode;
 };
 
 const defaults: SecuritySettings = {
@@ -16,6 +18,7 @@ const defaults: SecuritySettings = {
   aiProvider: 'none',
   aiModel: '',
   trustedDomains: ['company.com', 'trustedbank.example', 'community.org', 'microsoft.com'],
+  theme: 'dark',
 };
 
 const storageKey = 'security-guard-settings-v2';
@@ -28,6 +31,7 @@ type SecuritySettingsContextValue = {
   updateSettings: (patch: Partial<SecuritySettings>) => void;
   addTrustedDomain: (domain: string) => boolean;
   removeTrustedDomain: (domain: string) => void;
+  toggleTheme: () => void;
 };
 
 const SecuritySettingsContext = createContext<SecuritySettingsContextValue | null>(null);
@@ -41,6 +45,7 @@ function loadSettings(): SecuritySettings {
     return {
       ...defaults,
       ...parsed,
+      theme: parsed.theme === 'light' ? 'light' : 'dark',
       trustedDomains: Array.isArray(parsed.trustedDomains) && parsed.trustedDomains.length > 0
         ? parsed.trustedDomains.map(normalizeDomain).filter(Boolean)
         : defaults.trustedDomains,
@@ -56,6 +61,11 @@ export function SecuritySettingsProvider({ children }: { children: React.ReactNo
 
   useEffect(() => {
     window.localStorage.setItem(storageKey, JSON.stringify(settings));
+    if (settings.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [settings]);
 
   const value = useMemo<SecuritySettingsContextValue>(() => ({
@@ -79,6 +89,7 @@ export function SecuritySettingsProvider({ children }: { children: React.ReactNo
       if (current.trustedDomains.length <= 1) return current;
       return { ...current, trustedDomains: current.trustedDomains.filter((item) => item !== normalizeDomain(domain)) };
     }),
+    toggleTheme: () => setSettings((current) => ({ ...current, theme: current.theme === 'dark' ? 'light' : 'dark' })),
   }), [aiApiKey, settings]);
 
   return <SecuritySettingsContext.Provider value={value}>{children}</SecuritySettingsContext.Provider>;
