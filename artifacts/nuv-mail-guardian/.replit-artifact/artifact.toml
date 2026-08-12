@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "NUV Mail Guardian"
+description = "A browser-only university email security proof of concept that simulates an inbox and visually flags messages sent outside the official NUV domain."
+version = "1.0.0"
+id = "artifacts/nuv-mail-guardian"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18689
+
+[services.development]
+run = "pnpm --filter @workspace/nuv-mail-guardian run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/nuv-mail-guardian", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/nuv-mail-guardian/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18689"
+BASE_PATH = "/"
