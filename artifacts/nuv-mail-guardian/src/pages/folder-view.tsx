@@ -43,16 +43,16 @@ export function FolderView({ folder, title, description, onReply }: FolderViewPr
       <div className="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
           <div className="eyebrow">Demo Mode</div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#1f4165] sm:text-4xl">{title}</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#71869c]">{description}</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">{title}</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-[#71869c]">{description}</p>
         </div>
-        <div className="flex shrink-0 items-center gap-2 rounded-xl border border-[#dbe8f3] bg-[#f5faff] px-3.5 py-3 text-xs font-medium text-[#4c6f91]">
-          <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#deefff] text-[#3474ae]">
+        <div className="flex shrink-0 items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-3 text-xs font-medium text-slate-700 dark:text-[#4c6f91]">
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-blue-500/10 text-blue-500 font-bold">
             {filteredMessages.length}
           </span>
           <span>
             Message{filteredMessages.length !== 1 ? 's' : ''}<br />
-            <strong className="font-mono text-[0.68rem] text-[#28547d]">in {folder}</strong>
+            <strong className="font-mono text-[0.68rem] text-slate-900 dark:text-[#28547d]">in {folder}</strong>
           </span>
         </div>
       </div>

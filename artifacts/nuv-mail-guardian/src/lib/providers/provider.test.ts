@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DemoEmailProvider } from './demo';
 import { RealApiEmailProvider } from './stubs';
 import { getProvider, getDefaultProvider } from './registry';
-import { evaluateSecuritySignals, type NormalizedEmail } from '../security-engine';
+import { analyzeNormalizedEmail, type NormalizedEmail } from '../security-engine';
 
 describe('EmailProvider Contracts & Security Pipeline', () => {
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe('EmailProvider Contracts & Security Pipeline', () => {
     const demo = getDefaultProvider();
     expect(demo.id).toBe('demo');
     const status = await demo.getStatus();
-    expect(status).toBe('CONNECTED');
+    expect(status).toBe('DEMO');
 
     const messages = await demo.listMessages();
     expect(messages.length).toBeGreaterThan(0);
@@ -57,21 +57,22 @@ describe('EmailProvider Contracts & Security Pipeline', () => {
     expect(messages[0].id).toBe('msg-real-1');
 
     // Verify normalized email passes through deterministic security engine
-    const analysis = evaluateSecuritySignals(messages[0], ['company.com']);
-    expect(analysis.flagged).toBe(true);
-    expect(analysis.riskScore).toBeGreaterThan(0);
-    expect(analysis.signals.some((s) => s.key === 'externalSender')).toBe(true);
-    expect(analysis.signals.some((s) => s.key === 'urgency')).toBe(true);
+    const analysis = analyzeNormalizedEmail(mockNormalized[0], ['company.com']);
+    expect(analysis.signalsFound).toBe(true);
+    expect(analysis.score).toBeGreaterThan(0);
+    expect(analysis.signals.externalSender).toBe(true);
+    expect(analysis.signals.urgencyDetected).toBe(true);
   });
 
   it('Provider registry returns configured provider instances', () => {
     const gmail = getProvider('gmail');
     expect(gmail?.id).toBe('gmail');
 
-    const outlook = getProvider('outlook');
-    expect(outlook?.id).toBe('microsoft');
+    const microsoft = getProvider('microsoft');
+    expect(microsoft?.id).toBe('microsoft');
 
     const imap = getProvider('imap');
     expect(imap?.id).toBe('imap');
   });
 });
+

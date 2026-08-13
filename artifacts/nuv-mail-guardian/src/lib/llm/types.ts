@@ -6,6 +6,7 @@ export type LLMProviderStatus = 'NONE' | 'NOT_CONFIGURED' | 'MISSING_API_KEY' | 
 export type LLMAnalysisResult = {
   available: boolean;
   providerId: string;
+  modelUsed?: string;
   riskLevel?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   confidence?: number; // 0-1
   summary?: string;
@@ -20,5 +21,8 @@ export interface LLMProvider {
 
   getStatus(apiKey?: string): Promise<LLMProviderStatus>;
 
+  testConnection(apiKey?: string, model?: string): Promise<{ success: boolean; message: string }>;
+
   analyze(message: MailMessage, analysis: SecurityAnalysis, apiKey?: string, model?: string): Promise<LLMAnalysisResult>;
 }
+

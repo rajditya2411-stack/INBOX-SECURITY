@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { normalizeDomain } from '@/lib/analyzer';
 
 export type EmailProvider = 'demo' | 'gmail' | 'outlook' | 'imap';
-export type AIProvider = 'none' | 'openai' | 'anthropic' | 'gemini' | 'grok' | 'compatible';
+export type AIProvider = 'none' | 'openai' | 'anthropic' | 'gemini' | 'grok';
 export type ThemeMode = 'dark' | 'light';
 
 export type SecuritySettings = {
@@ -22,6 +22,7 @@ const defaults: SecuritySettings = {
 };
 
 const storageKey = 'security-guard-settings-v2';
+const apiKeyStorageKey = 'security-guard-ai-key-v1';
 
 type SecuritySettingsContextValue = {
   settings: SecuritySettings;
@@ -42,9 +43,11 @@ function loadSettings(): SecuritySettings {
     const stored = window.localStorage.getItem(storageKey);
     if (!stored) return defaults;
     const parsed = JSON.parse(stored) as Partial<SecuritySettings>;
+    const rawAiProvider = (parsed.aiProvider as string) === 'compatible' ? 'none' : parsed.aiProvider;
     return {
       ...defaults,
       ...parsed,
+      aiProvider: (rawAiProvider as AIProvider) || 'none',
       theme: parsed.theme === 'light' ? 'light' : 'dark',
       trustedDomains: Array.isArray(parsed.trustedDomains) && parsed.trustedDomains.length > 0
         ? parsed.trustedDomains.map(normalizeDomain).filter(Boolean)
@@ -57,7 +60,18 @@ function loadSettings(): SecuritySettings {
 
 export function SecuritySettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<SecuritySettings>(loadSettings);
-  const [aiApiKey, setAiApiKey] = useState('');
+  const [aiApiKey, setAiApiKeyState] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    return window.sessionStorage.getItem(apiKeyStorageKey) || '';
+  });
+
+  const setAiApiKey = (key: string) => {
+    setAiApiKeyState(key);
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(apiKeyStorageKey, key);
+    }
+  };
+
 
   useEffect(() => {
     window.localStorage.setItem(storageKey, JSON.stringify(settings));

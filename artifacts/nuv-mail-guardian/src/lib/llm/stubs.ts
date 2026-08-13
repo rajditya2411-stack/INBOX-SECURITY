@@ -17,52 +17,96 @@ export class AbstractLLMAdapter implements LLMProvider {
     return 'READY_FOR_INTEGRATION';
   }
 
+  async testConnection(apiKey?: string, model?: string): Promise<{ success: boolean; message: string }> {
+    if (this.id === 'none') {
+      return { success: false, message: 'Select an active provider (OpenAI, Gemini, Claude, or Grok).' };
+    }
+    try {
+      const res = await fetch('/api/ai/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: this.id,
+          apiKey,
+          model,
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        return { success: false, message: `Server error (${res.status}): ${text}` };
+      }
+
+      return (await res.json()) as { success: boolean; message: string };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || 'Failed to connect to backend server. Make sure the API server is running on port 5000.',
+      };
+    }
+  }
+
   async analyze(message: MailMessage, analysis: SecurityAnalysis, apiKey?: string, model?: string): Promise<LLMAnalysisResult> {
-    const status = await this.getStatus(apiKey);
-    if (status === 'NONE') {
+    if (this.id === 'none') {
       return {
         available: false,
         providerId: this.id,
         error: 'AI Provider is set to None. Rule-based security engine remains fully active.',
       };
     }
-    if (status === 'MISSING_API_KEY') {
+
+    try {
+      const res = await fetch('/api/ai/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: this.id,
+          apiKey,
+          model,
+          message,
+          analysis,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`AI proxy returned HTTP status ${res.status}`);
+      }
+
+      const data = (await res.json()) as LLMAnalysisResult;
+      return data;
+    } catch (err: any) {
+      // Graceful fallback to local rule-based engine simulation
+      const selectedModel = model?.trim() ? model.trim() : 'default';
       return {
         available: false,
         providerId: this.id,
-        error: `API Key is missing for ${this.name}. Enter key in Settings. Rule-based security engine remains active.`,
+        modelUsed: selectedModel,
+        riskLevel: analysis.riskLevel,
+        confidence: 0.9,
+        summary: `[${this.name} (${selectedModel}) Fallback] Local Security Engine evaluated ${analysis.signals.length} signal(s) for "${message.subject}".`,
+        reasons: analysis.signals.map((s) => `Engine signal: ${s}`),
+        recommendedAction: analysis.recommendation,
+        error: err?.message || 'Failed to connect to AI server proxy.',
       };
     }
-
-    const selectedModel = model?.trim() ? model.trim() : 'default';
-    return {
-      available: true,
-      providerId: this.id,
-      riskLevel: analysis.riskLevel,
-      confidence: 0.95,
-      summary: `[${this.name} (${selectedModel}) - Contract Ready] Evaluated ${analysis.signals.length} deterministic signal(s) for "${message.subject}".`,
-      reasons: analysis.signals.map((s) => `Engine signal: ${s}`),
-      recommendedAction: analysis.recommendation,
-    };
   }
 }
 
 export const OpenAIProvider = new AbstractLLMAdapter('openai', 'OpenAI');
-export const AnthropicProvider = new AbstractLLMAdapter('anthropic', 'Anthropic / Claude');
 export const GeminiProvider = new AbstractLLMAdapter('gemini', 'Google Gemini');
+export const AnthropicProvider = new AbstractLLMAdapter('anthropic', 'Anthropic / Claude');
 export const GrokProvider = new AbstractLLMAdapter('grok', 'xAI / Grok');
-export const CompatibleProvider = new AbstractLLMAdapter('compatible', 'OpenAI-compatible');
 export const NoneProvider = new AbstractLLMAdapter('none', 'None');
 
 const llmRegistry: Record<string, LLMProvider> = {
   none: NoneProvider,
   openai: OpenAIProvider,
-  anthropic: AnthropicProvider,
   gemini: GeminiProvider,
+  anthropic: AnthropicProvider,
   grok: GrokProvider,
-  compatible: CompatibleProvider,
 };
 
 export function getLLMProvider(id: string): LLMProvider {
   return llmRegistry[id] ?? NoneProvider;
 }
+

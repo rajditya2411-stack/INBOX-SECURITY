@@ -111,32 +111,32 @@ export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps)
       {/* Main App Layout */}
       <div className="min-w-0 flex-1 flex flex-col">
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/10 bg-background/90 px-6 backdrop-blur-md">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-card/90 px-6 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <button ref={menuButtonRef} type="button" className="mobile-menu-button rounded-lg border border-white/10 bg-white/5 p-2 text-[#8899ac] md:hidden" aria-label="Open navigation" aria-expanded={sidebarOpen} onClick={() => setSidebarOpen(true)}>
+            <button ref={menuButtonRef} type="button" className="mobile-menu-button rounded-lg border border-border bg-input p-2 text-muted-foreground md:hidden" aria-label="Open navigation" aria-expanded={sidebarOpen} onClick={() => setSidebarOpen(true)}>
               <Menu size={18} />
             </button>
-            <h1 className="text-lg font-extrabold text-white">Inbox</h1>
+            <h1 className="text-lg font-extrabold text-foreground">Inbox</h1>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Search Field */}
             <div className="relative flex items-center">
-              <Search size={15} className="absolute left-3 text-[#64748b]" />
+              <Search size={15} className="absolute left-3 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-56 rounded-xl border border-white/10 bg-white/5 py-1.5 pl-9 pr-4 text-xs text-white placeholder-[#64748b] outline-none focus:border-white/25 focus:ring-1 focus:ring-white/20"
+                className="w-56 rounded-xl border border-border bg-input py-1.5 pl-9 pr-4 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
               />
             </div>
 
             {/* Message Icon */}
-            <button type="button" className="text-[#8899ac] hover:text-white transition-colors">
+            <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
               <MessageSquare size={18} />
             </button>
 
             {/* Notification Bell */}
-            <button type="button" className="relative text-[#8899ac] hover:text-white transition-colors">
+            <button type="button" className="relative text-muted-foreground hover:text-foreground transition-colors">
               <Bell size={18} />
               <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500" />
             </button>
@@ -144,11 +144,11 @@ export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps)
             {/* Theme Switcher */}
             <button
               type="button"
-              className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#8899ac] hover:bg-white/10 hover:text-white transition-all"
+              className="flex items-center gap-2 rounded-xl border border-border bg-input px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted transition-all"
               onClick={toggleTheme}
               title="Switch Light / Dark theme"
             >
-              {settings.theme === 'dark' ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-blue-400" />}
+              {settings.theme === 'dark' ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-blue-500" />}
             </button>
 
             {/* Profile Avatar */}
