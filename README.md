@@ -1,18 +1,42 @@
-# INBOX SECURITY
+<div align="center">
 
-> **Security Guard** — an open-source email security and fraud detection application.
+  <h1>🛡️ Security Guard / Mail Guardian</h1>
+  <p><strong>Open-Source, Privacy-First Email Security & Threat Intelligence Platform</strong></p>
 
-Inbox Security is an email-security project designed to provide a secure, provider-agnostic email experience with deterministic security analysis at its core.
+  <p>
+    <a href="#-key-features">Key Features</a> •
+    <a href="#-visual-interface-showcase">UI Showcase</a> •
+    <a href="#-architectural-overview">Architecture</a> •
+    <a href="#11-running-locally">Quick Start</a> •
+    <a href="#16-roadmap-summary">Roadmap</a>
+  </p>
 
-The application currently presents itself as **Security Guard** in the UI. The product name may change in the future, but for now the interface and application should be referred to as **Security Guard**.
+  <p>
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License MIT" />
+    <img src="https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/React-19-61dafb?logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/Express-5.2-000000?logo=express" alt="Express" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Build-Passing-brightgreen" alt="Build Status" />
+  </p>
 
-The long-term goal is to combine:
+</div>
 
-* A complete email-client-style experience
-* Deterministic security analysis
-* Multiple email-provider integrations
-* Optional LLM-powered security explanations
-* A clean abstraction layer that keeps security analysis independent from any particular provider or AI model
+---
+
+## 🖼️ Visual Interface Showcase
+
+### 🌙 Dark Glassmorphic Dashboard (Option 1 Default Theme)
+*Features frosted-glass navigation, subtle border accents, high-contrast legibility, and real-time threat badges.*
+
+![Security Guard Dark Mode UI](screenshots/mail_guardian_dark.jpg)
+
+---
+
+### ☀️ Light Mode Interface
+*Clean high-contrast light theme with floating security analysis modals and intuitive signal badges.*
+
+![Security Guard Light Mode UI](screenshots/mail_guardian_light.jpg)
 
 ---
 
