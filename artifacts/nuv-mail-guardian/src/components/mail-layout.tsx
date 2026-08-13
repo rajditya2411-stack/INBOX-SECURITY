@@ -40,9 +40,9 @@ export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps)
   }, [sidebarOpen]);
 
   return (
-    <div className="app-shell flex bg-[#0c0f14] text-[#f0f4f8]">
-      {/* Frosted Glass Sidebar */}
-      <aside className="app-sidebar flex w-60 shrink-0 flex-col justify-between border-r border-white/10 bg-[#12161f]/90 p-5 backdrop-blur-xl" data-open={sidebarOpen}>
+    <div className="app-shell flex bg-background text-foreground min-h-screen">
+      {/* Sidebar */}
+      <aside className="app-sidebar flex w-60 shrink-0 flex-col justify-between border-r border-white/10 dark:bg-[#12161f]/90 light:bg-slate-900 p-5 backdrop-blur-xl" data-open={sidebarOpen}>
         <div>
           <div className="mb-8 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3" data-testid="link-brand">
@@ -109,7 +109,7 @@ export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps)
       {/* Main App Layout */}
       <div className="min-w-0 flex-1 flex flex-col">
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/10 bg-[#0c0f14]/90 px-6 backdrop-blur-md">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/10 bg-background/90 px-6 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <button ref={menuButtonRef} type="button" className="mobile-menu-button rounded-lg border border-white/10 bg-white/5 p-2 text-[#8899ac] md:hidden" aria-label="Open navigation" aria-expanded={sidebarOpen} onClick={() => setSidebarOpen(true)}>
               <Menu size={18} />

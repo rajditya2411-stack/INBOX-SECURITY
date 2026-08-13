@@ -63,7 +63,9 @@ export function SecuritySettingsProvider({ children }: { children: React.ReactNo
     window.localStorage.setItem(storageKey, JSON.stringify(settings));
     if (settings.theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
+      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
   }, [settings]);
