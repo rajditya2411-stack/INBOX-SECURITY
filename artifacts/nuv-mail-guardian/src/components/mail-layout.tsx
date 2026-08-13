@@ -1,4 +1,4 @@
-import { Bell, HelpCircle, Inbox, MessageSquare, Moon, Search, Settings, ShieldCheck, Sun, User, BarChart2, Menu, X, SquarePen } from 'lucide-react';
+import { Archive, BarChart2, Bell, FileText, HelpCircle, Inbox, LayoutDashboard, Menu, MessageSquare, Moon, Search, Send, Settings, ShieldCheck, SquarePen, Sun, Trash2, User, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useEffect, useRef, useState } from 'react';
 import { useSecuritySettings } from '@/hooks/use-security-settings';
@@ -6,12 +6,14 @@ import { useSecuritySettings } from '@/hooks/use-security-settings';
 type MailLayoutProps = { children: React.ReactNode; inboxCount: number; onCompose?: () => void };
 
 const navItems = [
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Inbox', href: '/', icon: Inbox },
+  { label: 'Sent', href: '/sent', icon: Send },
+  { label: 'Drafts', href: '/drafts', icon: FileText },
+  { label: 'Spam', href: '/spam', icon: Archive },
+  { label: 'Trash', href: '/trash', icon: Trash2 },
   { label: 'Security', href: '/security', icon: ShieldCheck },
   { label: 'Settings', href: '/settings', icon: Settings },
-  { label: 'Reports', href: '/reports', icon: BarChart2 },
-  { label: 'Profile', href: '/profile', icon: User },
-  { label: 'Help', href: '/help', icon: HelpCircle },
 ];
 
 export function MailLayout({ children, inboxCount, onCompose }: MailLayoutProps) {
