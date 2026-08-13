@@ -63,35 +63,35 @@ export function MessageDetail({ message, analysis, trustedDomains, aiApiKey, aiC
         {analysis?.flagged && !warningDismissed && <WarningBanner whyButtonRef={whyButtonRef} onSeeWhy={onSeeWhy} onContinue={onContinueReading} />}
         <article className={analysis?.flagged || warningDismissed ? 'mt-6' : 'mt-1'} data-testid={`article-message-${message.id}`}>
           <div className="eyebrow">Message</div>
-           <h1 className="mt-2 break-words text-2xl font-bold leading-tight tracking-tight text-[#1f4165] sm:text-[1.75rem]" data-testid="text-message-subject">{message.subject}</h1>
-          <div className="mt-6 flex items-start gap-3 border-b border-[#e8eef4] pb-5">
+           <h1 className="mt-2 break-words text-2xl font-bold leading-tight tracking-tight text-[#f0f4f8] sm:text-[1.75rem]" data-testid="text-message-subject">{message.subject}</h1>
+          <div className="mt-6 flex items-start gap-3 border-b border-white/10 pb-5">
             <span className="sender-avatar !h-10 !w-10">{initials(message.senderName)}</span>
             <div className="min-w-0">
-              <div className="font-bold text-[#2a4d70]" data-testid="text-detail-sender">{message.senderName}</div>
-              <div className="mt-0.5 break-all text-xs text-[#8193a6]" data-testid="text-detail-email">{message.senderEmail}</div>
+              <div className="font-bold text-[#f0f4f8]" data-testid="text-detail-sender">{message.senderName}</div>
+              <div className="mt-0.5 break-all text-xs text-[#94a3b8]" data-testid="text-detail-email">{message.senderEmail}</div>
             </div>
-            <time className="ml-auto shrink-0 text-xs text-[#8b9bad]">{message.time}</time>
+            <time className="ml-auto shrink-0 text-xs text-[#64748b]">{message.time}</time>
           </div>
            {analysis?.flagged && !warningDismissed ? (
-             <div className="mt-7 rounded-lg border border-[#f1cacc] bg-[#fff8f8] px-4 py-3 text-sm leading-6 text-[#7f5a5c]" data-testid="text-message-content-hidden">
-               Choose “Continue Reading” to view the message content.
+             <div className="mt-7 rounded-xl border border-amber-500/20 bg-amber-500/10 px-5 py-4 text-sm leading-6 text-[#fcd34d]" data-testid="text-message-content-hidden">
+               Choose “Continue Reading” to view the message content safely.
              </div>
            ) : (
-             <div className="prose prose-sm mt-7 max-w-none text-[#526d87]">
+             <div className="prose prose-sm mt-7 max-w-none text-[#cbd5e1] leading-relaxed">
                {message.body.map((paragraph, index) => (
-                 <p key={`${message.id}-body-${index}`} className="mb-4 leading-7" data-testid={`text-message-body-${index}`}>{paragraph}</p>
+                 <p key={`${message.id}-body-${index}`} className="mb-4 leading-7 text-[#cbd5e1]" data-testid={`text-message-body-${index}`}>{paragraph}</p>
                ))}
              </div>
            )}
            {analysis?.flagged && warningDismissed && (
-             <div className="mt-6 border-t border-[#e8eef4] pt-5">
+             <div className="mt-6 border-t border-white/10 pt-5">
                <div className="flex flex-wrap items-center gap-2">
                  <span className={`risk-pill risk-${analysis.riskLevel.toLowerCase()}`}>{analysis.riskLevel} risk</span>
-                 <span className="text-xs text-[#7b8fa4]">{detectedSignals} signal{detectedSignals === 1 ? '' : 's'} detected</span>
+                 <span className="text-xs text-[#94a3b8]">{detectedSignals} signal{detectedSignals === 1 ? '' : 's'} detected</span>
                  {aiConfigured && <button type="button" className="outline-button" onClick={runAIAnalysis}>Analyze with AI</button>}
                </div>
-               {aiResult && <div className="mt-3 rounded-lg bg-[#f4f8fc] px-4 py-3 text-sm text-[#607991]" data-testid="ai-analysis-result">{aiResult.error ?? aiResult.summary}</div>}
-               {!aiConfigured && <p className="mt-3 text-xs text-[#8093a7]">Optional AI analysis is not configured. Rule-based analysis remains active.</p>}
+               {aiResult && <div className="mt-3 rounded-lg bg-white/5 px-4 py-3 text-sm text-[#cbd5e1]" data-testid="ai-analysis-result">{aiResult.error ?? aiResult.summary}</div>}
+               {!aiConfigured && <p className="mt-3 text-xs text-[#64748b]">Optional AI analysis is not configured. Rule-based analysis remains active.</p>}
              </div>
            )}
         </article>

@@ -45,19 +45,24 @@ export function InboxList({ messages, analyses, selectedId, search, onSearchChan
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-3">
                     <span className="flex min-w-0 items-center gap-2">
-                      <span className="truncate text-sm font-bold text-[#2a4d70]" data-testid={`text-sender-${message.id}`}>{message.senderName}</span>
-                        {analysis?.flagged && (
-                         <>
-                           <span className="suspicious-dot" aria-hidden="true" data-testid={`status-suspicious-${message.id}`} />
-                           <span className="sr-only">Suspicious external sender</span>
-                         </>
-                       )}
+                      <span className="truncate text-sm font-bold text-[#f0f4f8]" data-testid={`text-sender-${message.id}`}>{message.senderName}</span>
                     </span>
-                    <span className="shrink-0 text-[0.7rem] font-medium text-[#8b9bad]">{message.time}</span>
+                    <span className="shrink-0 text-[0.7rem] font-medium text-[#71869c]">{message.time}</span>
                   </span>
-                  <span className="mt-1 block truncate text-xs font-medium text-[#58718b]">{message.senderEmail}</span>
-                  <span className="mt-2 block truncate text-sm font-semibold text-[#365774]">{message.subject}</span>
-                  <span className="mt-1 block truncate text-xs leading-5 text-[#8092a5]">{message.preview}</span>
+                  <span className="mt-0.5 block truncate text-xs font-semibold text-[#cbd5e1]">{message.subject}</span>
+                  <span className="mt-1 block truncate text-xs leading-5 text-[#8899ac]">{message.preview}</span>
+                  <span className="mt-2.5 flex items-center gap-2">
+                    {analysis?.flagged ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#ef4444]/15 px-2.5 py-0.5 text-[0.68rem] font-bold text-[#fca5a5] border border-[#ef4444]/30" data-testid={`status-suspicious-${message.id}`}>
+                        <span className="suspicious-dot" aria-hidden="true" />
+                        {analysis.signals.includes('externalSender') ? '[Unverified Domain]' : 'Suspicious Link detected'}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/15 px-2.5 py-0.5 text-[0.68rem] font-bold text-[#6ee7b7] border border-[#10b981]/30">
+                        ✓ Secure
+                      </span>
+                    )}
+                  </span>
                 </span>
               </div>
             </button>
