@@ -49,17 +49,6 @@ function InboxPage({ onReply }: InboxPageProps) {
 
   return (
     <>
-      <div className="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-        <div>
-          <div className="eyebrow">{settings.emailProvider === 'demo' ? 'Demo Mode' : 'Inbox'}</div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#f0f4f8] sm:text-4xl" data-testid="heading-inbox">Inbox, with a clearer signal.</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#94a3b8]">Review incoming mail with confidence. Security Guard combines trusted domains with transparent rule-based signals.</p>
-        </div>
-        <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-medium text-[#cbd5e1]" data-testid="status-inbox-rule">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-amber-500/20 text-[#f59e0b] font-bold">01</span>
-          <span>Rule-based<br /><strong className="font-mono text-[0.68rem] text-[#f59e0b]">signals active</strong></span>
-        </div>
-      </div>
       <div className="mail-grid" data-mobile-detail={selected ? 'true' : 'false'}>
          <InboxList
            messages={filteredMessages}

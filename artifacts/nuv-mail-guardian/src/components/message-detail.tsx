@@ -1,4 +1,4 @@
-import { ArrowLeft, Mail, Reply, ShieldCheck } from 'lucide-react';
+import { Archive, Flag, Trash2, ShieldAlert } from 'lucide-react';
 import { useState, type RefObject } from 'react';
 import { MailMessage, initials } from '@/data/messages';
 import { WarningBanner } from '@/components/warning-banner';
@@ -21,80 +21,97 @@ type MessageDetailProps = {
   onReply?: (message: MailMessage) => void;
 };
 
-export function MessageDetail({ message, analysis, trustedDomains, aiApiKey, aiConfigured, aiProvider, aiModel, warningDismissed, whyButtonRef, onSeeWhy, onContinueReading, onBack, onReply }: MessageDetailProps) {
-  const [aiResult, setAiResult] = useState<AIAnalysisResult | null>(null);
+export function MessageDetail({ message, analysis, warningDismissed, whyButtonRef, onSeeWhy, onContinueReading, onBack }: MessageDetailProps) {
   if (!message) {
     return (
-      <section className="panel detail-card flex flex-col items-center justify-center px-8 text-center">
-        <div className="empty-illustration"><Mail size={25} /></div>
-        <h2 className="mt-5 text-lg font-bold text-[#2a4d70]">Choose a message to read</h2>
-        <p className="mt-2 max-w-xs text-sm leading-6 text-[#7c90a5]">Your selected email will open here. Security Guard will show the rule-based signals before you read a flagged message.</p>
+      <section className="panel detail-card flex flex-col items-center justify-center p-12 text-center border border-white/10 bg-[#12161f] rounded-2xl min-h-[500px]">
+        <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 grid place-items-center text-amber-400 font-bold text-xl">
+          🛡️
+        </div>
+        <h2 className="mt-4 text-base font-bold text-white">Select a message to inspect</h2>
+        <p className="mt-1 text-xs text-[#8899ac]">Mail Guardian security analysis and rule-based verification signals will display here.</p>
       </section>
     );
   }
 
-  const detectedSignals = analysis?.signals.length ?? 0;
-  const runAIAnalysis = async () => {
-    if (!analysis) return;
-    const provider = createAIProvider(aiProvider, aiApiKey, aiModel);
-    if (!provider) {
-      setAiResult({ available: false, error: 'AI analysis unavailable. Rule-based analysis is still active.' });
-      return;
-    }
-    setAiResult(await provider.analyze(message, analysis));
-  };
+  const senderDomain = message.senderEmail.split('@')[1] || '';
+
   return (
-    <section className="panel detail-card" data-testid={`panel-message-detail-${message.id}`}>
-      <div className="detail-topline flex items-center justify-between gap-3 px-5 py-3 sm:px-7">
-        <button type="button" className="ghost-button -ml-2 md:hidden" onClick={onBack} data-testid="button-back-to-inbox"><ArrowLeft size={15} />Back to inbox</button>
-        <div className="ml-auto flex items-center gap-3">
-          {onReply && (
-            <button type="button" className="outline-button !py-1 !px-3 text-xs" onClick={() => onReply(message)} data-testid="button-reply">
-              <Reply size={14} />
-              Reply
+    <section className="panel detail-card flex flex-col justify-between border border-white/10 bg-[#12161f] rounded-2xl overflow-hidden min-h-[600px]" data-testid={`panel-message-detail-${message.id}`}>
+      <div>
+        {/* Action Toolbar */}
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-3 bg-white/[0.02]">
+          <button type="button" className="text-xs text-[#8899ac] hover:text-white md:hidden" onClick={onBack}>
+            ← Back
+          </button>
+          <div className="ml-auto flex items-center gap-4 text-xs font-semibold text-[#8899ac]">
+            <button type="button" className="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+              <Trash2 size={14} /> Delete
             </button>
+            <button type="button" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors">
+              <Flag size={14} /> Flag
+            </button>
+            <button type="button" className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <Archive size={14} /> Archive
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {/* Sender Header */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full border border-white/15 bg-gradient-to-tr from-slate-700 to-slate-800 grid place-items-center text-xs font-bold text-white shadow-md">
+                {initials(message.senderName)}
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-white">{message.senderName}</div>
+                <div className="text-xs font-mono text-[#8899ac]">{message.senderEmail}</div>
+              </div>
+            </div>
+            <div className="text-xs font-mono text-[#64748b]">Date: Oct 26, 09:15 AM</div>
+          </div>
+
+          {/* Subject Header */}
+          <div className="mt-6 text-sm font-bold text-white">
+            <span className="text-[#8899ac]">Subject: </span>
+            {message.subject}
+          </div>
+
+          {/* Warning Banner */}
+          {analysis?.flagged && !warningDismissed && (
+            <div className="mt-5">
+              <WarningBanner whyButtonRef={whyButtonRef} onSeeWhy={onSeeWhy} onContinue={onContinueReading} description={`Domain ${senderDomain} is unverified`} />
+            </div>
           )}
-          <span className="hidden items-center gap-2 text-xs font-bold text-[#4c8b77] md:flex" data-testid="status-message-trust">
-            {analysis?.flagged ? <><span className="suspicious-dot" />Potentially suspicious</> : <><ShieldCheck size={15} />No rule-based signals</>}
-          </span>
+
+          {/* Body Content */}
+          <div className="mt-6 text-xs leading-relaxed text-[#cbd5e1] space-y-4">
+            {message.body.map((paragraph, index) => (
+              <p key={`${message.id}-body-${index}`} data-testid={`text-message-body-${index}`}>{paragraph}</p>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="p-5 sm:p-7">
-        {analysis?.flagged && !warningDismissed && <WarningBanner whyButtonRef={whyButtonRef} onSeeWhy={onSeeWhy} onContinue={onContinueReading} />}
-        <article className={analysis?.flagged || warningDismissed ? 'mt-6' : 'mt-1'} data-testid={`article-message-${message.id}`}>
-          <div className="eyebrow">Message</div>
-           <h1 className="mt-2 break-words text-2xl font-bold leading-tight tracking-tight text-[#f0f4f8] sm:text-[1.75rem]" data-testid="text-message-subject">{message.subject}</h1>
-          <div className="mt-6 flex items-start gap-3 border-b border-white/10 pb-5">
-            <span className="sender-avatar !h-10 !w-10">{initials(message.senderName)}</span>
-            <div className="min-w-0">
-              <div className="font-bold text-[#f0f4f8]" data-testid="text-detail-sender">{message.senderName}</div>
-              <div className="mt-0.5 break-all text-xs text-[#94a3b8]" data-testid="text-detail-email">{message.senderEmail}</div>
-            </div>
-            <time className="ml-auto shrink-0 text-xs text-[#64748b]">{message.time}</time>
-          </div>
-           {analysis?.flagged && !warningDismissed ? (
-             <div className="mt-7 rounded-xl border border-amber-500/20 bg-amber-500/10 px-5 py-4 text-sm leading-6 text-[#fcd34d]" data-testid="text-message-content-hidden">
-               Choose “Continue Reading” to view the message content safely.
-             </div>
-           ) : (
-             <div className="prose prose-sm mt-7 max-w-none text-[#cbd5e1] leading-relaxed">
-               {message.body.map((paragraph, index) => (
-                 <p key={`${message.id}-body-${index}`} className="mb-4 leading-7 text-[#cbd5e1]" data-testid={`text-message-body-${index}`}>{paragraph}</p>
-               ))}
-             </div>
-           )}
-           {analysis?.flagged && warningDismissed && (
-             <div className="mt-6 border-t border-white/10 pt-5">
-               <div className="flex flex-wrap items-center gap-2">
-                 <span className={`risk-pill risk-${analysis.riskLevel.toLowerCase()}`}>{analysis.riskLevel} risk</span>
-                 <span className="text-xs text-[#94a3b8]">{detectedSignals} signal{detectedSignals === 1 ? '' : 's'} detected</span>
-                 {aiConfigured && <button type="button" className="outline-button" onClick={runAIAnalysis}>Analyze with AI</button>}
-               </div>
-               {aiResult && <div className="mt-3 rounded-lg bg-white/5 px-4 py-3 text-sm text-[#cbd5e1]" data-testid="ai-analysis-result">{aiResult.error ?? aiResult.summary}</div>}
-               {!aiConfigured && <p className="mt-3 text-xs text-[#64748b]">Optional AI analysis is not configured. Rule-based analysis remains active.</p>}
-             </div>
-           )}
-        </article>
+
+      {/* Bottom Security Summary & Actions Bar */}
+      <div className="border-t border-white/10 bg-[#0c0f14]/80 p-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="text-xs font-bold text-white">Security summary</div>
+          <div className="text-[0.72rem] text-[#8899ac]">Domain {senderDomain || 'external'} is unverified</div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button type="button" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:bg-white/10 transition-all" onClick={onSeeWhy}>
+            Analyze
+          </button>
+          <button type="button" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/20 transition-all">
+            Restrict
+          </button>
+          <button type="button" className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-slate-200 transition-all">
+            Allow
+          </button>
+        </div>
       </div>
     </section>
   );

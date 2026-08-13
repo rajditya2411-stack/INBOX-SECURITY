@@ -1,4 +1,4 @@
-import { Search, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Circle } from 'lucide-react';
 import { MailMessage, initials } from '@/data/messages';
 import type { SecurityAnalysis } from '@/lib/analyzer';
 
@@ -11,73 +11,81 @@ type InboxListProps = {
   onSelect: (message: MailMessage) => void;
 };
 
-export function InboxList({ messages, analyses, selectedId, search, onSearchChange, onSelect }: InboxListProps) {
+export function InboxList({ messages, analyses, selectedId, onSelect }: InboxListProps) {
   return (
-    <section className="panel inbox-panel overflow-hidden" aria-labelledby="heading-inbox-list">
-      <div className="border-b border-[#e8eef4] px-4 py-4 sm:px-5">
-        <div className="mb-4 flex items-end justify-between gap-3">
-          <div>
-            <div className="eyebrow">Inbox</div>
-            <h2 className="mt-1 text-xl font-bold tracking-tight text-[#1f4165]" data-testid="heading-inbox-list">Your messages</h2>
-          </div>
-          <span className="rounded-full bg-[#edf6ff] px-2.5 py-1 text-xs font-bold text-[#3873a8]" data-testid="text-message-count">{messages.length} messages</span>
-        </div>
-        <label className="search-field" htmlFor="message-search">
-          <Search size={16} />
-           <input id="message-search" type="search" placeholder="Search sender, subject, or message" value={search} onChange={(event) => onSearchChange(event.target.value)} data-testid="input-message-search" />
-        </label>
-         <span className="sr-only" role="status" aria-live="polite">{messages.length} messages shown</span>
+    <section className="panel inbox-panel overflow-hidden border border-white/10 bg-[#12161f] rounded-2xl" aria-labelledby="heading-inbox-list">
+      <div className="border-b border-white/10 px-5 py-4 flex items-center justify-between">
+        <h2 className="text-base font-extrabold text-white" data-testid="heading-inbox-list">Inbox</h2>
+        <span className="text-xs font-bold font-mono text-[#8899ac]" data-testid="text-message-count">{messages.length}</span>
       </div>
-      <div>
+
+      <div className="divide-y divide-white/5">
         {messages.length > 0 ? messages.map((message) => {
-           const analysis = analyses[message.id];
+          const analysis = analyses[message.id];
+          const isSelected = selectedId === message.id;
+          const isExternal = analysis?.signals.includes('externalSender');
+          const isPhishing = analysis?.signals.includes('suspiciousLink') || analysis?.signals.includes('credentialRequest');
+
           return (
             <button
               type="button"
               key={message.id}
-              className="message-row"
-              data-selected={selectedId === message.id}
+              className={`w-full text-left p-4 transition-all duration-150 ${isSelected ? 'bg-white/10 border-l-4 border-amber-500' : 'hover:bg-white/5'}`}
               onClick={() => onSelect(message)}
               data-testid={`button-message-${message.id}`}
             >
               <div className="flex items-start gap-3">
-                <span className="sender-avatar">{initials(message.senderName)}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-3">
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span className="truncate text-sm font-bold text-[#f0f4f8]" data-testid={`text-sender-${message.id}`}>{message.senderName}</span>
-                    </span>
-                    <span className="shrink-0 text-[0.7rem] font-medium text-[#71869c]">{message.time}</span>
-                  </span>
-                  <span className="mt-0.5 block truncate text-xs font-semibold text-[#cbd5e1]">{message.subject}</span>
-                  <span className="mt-1 block truncate text-xs leading-5 text-[#8899ac]">{message.preview}</span>
-                  <span className="mt-2.5 flex items-center gap-2">
+                {/* Radio Select Icon */}
+                <div className="mt-1 text-[#64748b]">
+                  {isSelected ? (
+                    <CheckCircle2 size={16} className="text-amber-400 fill-amber-400/20" />
+                  ) : (
+                    <Circle size={16} />
+                  )}
+                </div>
+
+                {/* Sender Avatar */}
+                <div className="h-9 w-9 shrink-0 rounded-full border border-white/10 bg-white/10 grid place-items-center text-xs font-bold text-white">
+                  {initials(message.senderName)}
+                </div>
+
+                {/* Message Meta & Threat Badges */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-xs font-extrabold text-white">{message.senderName}</span>
+                    <span className="shrink-0 font-mono text-[0.68rem] text-[#64748b]">{message.time}</span>
+                  </div>
+
+                  <div className="mt-0.5 truncate text-xs font-medium text-[#cbd5e1]">{message.subject}</div>
+
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
                     {analysis?.flagged ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#ef4444]/15 px-2.5 py-0.5 text-[0.68rem] font-bold text-[#fca5a5] border border-[#ef4444]/30" data-testid={`status-suspicious-${message.id}`}>
-                        <span className="suspicious-dot" aria-hidden="true" />
-                        {analysis.signals.includes('externalSender') ? '[Unverified Domain]' : 'Suspicious Link detected'}
-                      </span>
+                      isPhishing ? (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-0.5 text-[0.65rem] font-bold text-red-400 border border-red-500/20">
+                          🚫 Blocked Phishing
+                        </span>
+                      ) : isExternal ? (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[0.65rem] font-bold text-amber-400 border border-amber-500/20">
+                          [Unverified Domain]
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-0.5 text-[0.65rem] font-bold text-red-400 border border-red-500/20">
+                          ⚠️ Suspicious Link detected
+                        </span>
+                      )
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/15 px-2.5 py-0.5 text-[0.68rem] font-bold text-[#6ee7b7] border border-[#10b981]/30">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-bold text-emerald-400 border border-emerald-500/20">
                         ✓ Secure
                       </span>
                     )}
-                  </span>
-                </span>
+                  </div>
+                </div>
               </div>
             </button>
           );
         }) : (
-          <div className="px-6 py-12 text-center">
-            <div className="empty-illustration mx-auto"><Search size={24} /></div>
-            <h3 className="mt-4 font-bold text-[#2a4d70]">No messages found</h3>
-            <p className="mt-1 text-sm text-[#7c90a5]">Try a different sender or subject.</p>
-          </div>
+          <div className="p-8 text-center text-xs text-[#64748b]">No messages in inbox</div>
         )}
-      </div>
-      <div className="flex items-center gap-2 border-t border-[#e8eef4] bg-[#fbfdff] px-5 py-3 text-[0.7rem] text-[#7890a8]">
-        <ShieldCheck size={14} className="text-[#4c8b77]" />
-          <span>Rule-based signals help you pause and verify unusual requests</span>
       </div>
     </section>
   );
